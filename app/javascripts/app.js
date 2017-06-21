@@ -6,10 +6,10 @@ import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract'
 
 // Import our contract artifacts and turn them into usable abstractions.
-import metacoin_artifacts from '../../build/contracts/MetaCoin.json'
+import rating_artifacts from '../../build/contracts/Rating.json'
 
 // MetaCoin is our usable abstraction, which we'll use through the code below.
-var MetaCoin = contract(metacoin_artifacts);
+var Rating = contract(rating_artifacts);
 
 // The following code is simple to show off interacting with your contracts.
 // As your needs grow you will likely need to change its form and structure.
@@ -22,7 +22,7 @@ window.App = {
     var self = this;
 
     // Bootstrap the MetaCoin abstraction for Use.
-    MetaCoin.setProvider(web3.currentProvider);
+    Rating.setProvider(web3.currentProvider);
 
     // Get the initial account balance so it can be displayed.
     web3.eth.getAccounts(function(err, accs) {
@@ -39,7 +39,8 @@ window.App = {
       accounts = accs;
       account = accounts[0];
 
-      self.refreshBalance();
+      self.refreshRating();
+      self.refreshRatingForAccount1();
     });
   },
 
@@ -48,20 +49,60 @@ window.App = {
     status.innerHTML = message;
   },
 
-  refreshBalance: function() {
+  refreshRating: function() {
     var self = this;
 
-    var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.getBalance.call(account, {from: account});
+    var ratingInstance;
+    Rating.deployed().then(function(instance) {
+      ratingInstance = instance;
+      //return the rating for account
+      return ratingInstance.getAverageRating.call(account, {from: account});
+
     }).then(function(value) {
-      var balance_element = document.getElementById("balance");
-      balance_element.innerHTML = value.valueOf();
+
+      var rating_element = document.getElementById("balance");
+      rating_element.innerHTML = value.valueOf();
+
     }).catch(function(e) {
       console.log(e);
       self.setStatus("Error getting balance; see log.");
     });
+  },
+
+  refreshRatingForAccount1: function() {
+    var self = this;
+
+    var ratingInstance;
+    Rating.deployed().then(function(instance) {
+      ratingInstance = instance;
+      //return the rating for account
+      return ratingInstance.getAverageRating.call("0xC41daB42D281256a62E857De45376A90259E820E", {from: account});
+
+    }).then(function(value) {
+
+      var rating_element = document.getElementById("account1");
+      rating_element.innerHTML = value.valueOf();
+
+    }).catch(function(e) {
+      console.log(e);
+      self.setStatus("Error getting balance; see log.");
+    });
+
+    Rating.deployed().then(function(instance) {
+      ratingInstance = instance;
+      //return the rating for account
+      return ratingInstance.getTotalRator.call("0xC41daB42D281256a62E857De45376A90259E820E", {from: account});
+
+    }).then(function(value) {
+
+      var rating_element = document.getElementById("account1rator");
+      rating_element.innerHTML = value.valueOf();
+
+    }).catch(function(e) {
+      console.log(e);
+      self.setStatus("Error getting balance; see log.");
+    });
+
   },
 
   sendCoin: function() {
@@ -73,12 +114,13 @@ window.App = {
     this.setStatus("Initiating transaction... (please wait)");
 
     var meta;
-    MetaCoin.deployed().then(function(instance) {
-      meta = instance;
-      return meta.sendCoin(receiver, amount, {from: account});
-    }).then(function() {
+    Rating.deployed().then(function(instance) {
+      var ratingInstance = instance;
+      return ratingInstance.addRating(receiver, amount, {from: account});
+    }).then(function(value) {
       self.setStatus("Transaction complete!");
-      self.refreshBalance();
+      self.refreshRatingForAccount1();
+      alert(value.valueOf())
     }).catch(function(e) {
       console.log(e);
       self.setStatus("Error sending coin; see log.");
