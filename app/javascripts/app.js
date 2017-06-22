@@ -5,17 +5,13 @@ import "../stylesheets/app.css";
 import { default as Web3} from 'web3';
 import { default as contract } from 'truffle-contract'
 
-// Import our contract artifacts and turn them into usable abstractions.
 import rating_artifacts from '../../build/contracts/Rating.json'
 
-// MetaCoin is our usable abstraction, which we'll use through the code below.
 var Rating = contract(rating_artifacts);
 
-// The following code is simple to show off interacting with your contracts.
-// As your needs grow you will likely need to change its form and structure.
-// For application bootstrapping, check out window.addEventListener below.
 var accounts;
 var account;
+var account1;
 
 window.App = {
   start: function() {
@@ -38,6 +34,7 @@ window.App = {
 
       accounts = accs;
       account = accounts[0];
+      account1 = accounts[1];
 
       self.refreshRating();
       self.refreshRatingForAccount1();
@@ -76,7 +73,7 @@ window.App = {
     Rating.deployed().then(function(instance) {
       ratingInstance = instance;
       //return the rating for account
-      return ratingInstance.getAverageRating.call("0xC41daB42D281256a62E857De45376A90259E820E", {from: account});
+      return ratingInstance.getAverageRating.call(account1, {from: account});
 
     }).then(function(value) {
 
@@ -91,7 +88,7 @@ window.App = {
     Rating.deployed().then(function(instance) {
       ratingInstance = instance;
       //return the rating for account
-      return ratingInstance.getTotalRator.call("0xC41daB42D281256a62E857De45376A90259E820E", {from: account});
+      return ratingInstance.getTotalRator.call(account1, {from: account});
 
     }).then(function(value) {
 

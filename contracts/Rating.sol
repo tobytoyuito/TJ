@@ -3,24 +3,21 @@ pragma solidity ^0.4.6;
 // We have to specify what version of compiler this code will compile with
 contract Rating {
   
-  mapping (address => uint8) public totalRates;
-  mapping (address => uint8) public numOfRaters;
-  mapping (address => mapping (address => uint8)) public isRated;
+  mapping (address => uint8) totalRates;
+  mapping (address => uint8) numOfRaters;
+  mapping (address => mapping (address => uint8)) isRated;
 
-  address[] public rateeList;
+  address[] rateeList;
 
   function Rating() {
     
   }
 
   function getAverageRating(address ratee) returns(uint8) {
-    return totalRates[ratee];
-    /*
     if (numOfRaters[ratee] == 0) {
       return 0;
     }
     return totalRates[ratee] / numOfRaters[ratee];
-    */
   }
 
   function getTotalRator(address ratee) returns(uint8) {
@@ -49,8 +46,18 @@ contract Rating {
     }
   }
   
-  //add candidates
+  //add ratee
   function addRatee(address ratee){
+    for(uint i = 0; i < rateeList.length; i++) {
+      if (rateeList[i] == ratee) {
+        return;
+      } 
+    }
     rateeList.push(ratee);
+  }
+
+  //get ratee list
+  function getRateeList() returns(address[]) {
+    return rateeList;
   }
 }
